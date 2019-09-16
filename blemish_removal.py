@@ -19,40 +19,27 @@ def calcNoise(img):
 def removeBlemish(action, x, y, flags, userdata):
     global source
     if action == cv2.EVENT_LBUTTONDOWN:
-        print(x)
-        print(y)
         neighbor_patches = []
         blemish_patch = np.zeros((30, 30))
         blemish_patch_noise_score = 1
         for i in range(-1, 2):
             for j in range(-1, 2):
-                print(source.shape)
-                print(x - 15 + 30 * j)
-                print(x + 15 + 30 * j)
-                print(y - 15 + 30 * i)
-                print(y + 15 + 30 * i)
                 patch = source[(y - 15 + 30 * j):(y + 15 + 30 * j), (x - 15 + 30 * i):(x + 15 + 30 * i), :]
-                print(patch.shape)
                 if i == 0 and j == 0:
-                    blemish_patch = patch
                     blemish_patch_noise_score = calcNoise(cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY))
-                    # print(tmp_noise)
                 else:
                     neighbor_patches.append(patch)
 
         min_noise = 1
-        smoothest_neighbor = np.zeros((30, 30))
-        print(len(neighbor_patches))
+        smoothest_neighbor = np.zeros((30, 30, 3))
         for patch in neighbor_patches:
             tmp_noise = calcNoise(cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY))
             if tmp_noise < min_noise:
                 min_noise = tmp_noise
-                print(min_noise)
                 smoothest_neighbor = patch
         if min_noise < blemish_patch_noise_score:
-            print("correcting image...")
             source_cp = source.copy()
-            mask2d = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (30, 30))*255
+            mask2d = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (30, 30)) * 255
             source = cv2.seamlessClone(smoothest_neighbor, source_cp, mask2d, (x, y), cv2.NORMAL_CLONE)
 
 
