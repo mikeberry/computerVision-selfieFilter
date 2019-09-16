@@ -1,15 +1,21 @@
 import cv2
 import numpy as np
 
-
 def calcNoise(img):
-    # print(img.shape)
+    """
+    Get a measurement of noise by calculating the ratio of high frequencies compared
+    to all frequencies
+    :param img: input image with shape (30,30)
+    :return: high frequency ratio
+    """
+    if(img.shape!=(30,30)):
+        raise Exception('invalid input shape')
     f = np.fft.fft2(img)
     fshift = np.fft.fftshift(f)
     magnitude_spectrum = 20 * np.log(np.abs(fshift))
     sum_mag_spec = np.sum(magnitude_spectrum)
     mask = np.ones(img.shape)
-    mask[10:20, 10:20] = 0
+    mask[7:23, 7:23] = np.logical_not(cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (16, 16)))
     filtered_mag_spec = magnitude_spectrum * mask
     sum_filtered_mag_spec = np.sum(filtered_mag_spec)
     highRatio = sum_filtered_mag_spec / sum_mag_spec
@@ -17,10 +23,18 @@ def calcNoise(img):
 
 
 def removeBlemish(action, x, y, flags, userdata):
+    """
+    mouse callback to remove blemishes on an image
+    :param action:
+    :param x:
+    :param y:
+    :param flags:
+    :param userdata:
+    :return:
+    """
     global source
     if action == cv2.EVENT_LBUTTONDOWN:
         neighbor_patches = []
-        blemish_patch = np.zeros((30, 30))
         blemish_patch_noise_score = 1
         for i in range(-1, 2):
             for j in range(-1, 2):
