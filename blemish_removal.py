@@ -57,15 +57,16 @@ def removeBlemish(action, x, y, flags, userdata):
             source = cv2.seamlessClone(smoothest_neighbor, source_cp, mask2d, (x, y), cv2.NORMAL_CLONE)
 
 
-source = cv2.imread("blemish.png", 1)
-cv2.namedWindow("Blemish_removal")
-# highgui function called when mouse events occur
-cv2.setMouseCallback("Blemish_removal", removeBlemish)
-k = 0
-# loop until escape character is pressed
-while k != 27:
-    cv2.imshow("Blemish_removal", source)
+if __name__ == "__main__":
+    source = cv2.imread("blemish.png", 1)
+    cv2.namedWindow("Blemish_removal")
+    # highgui function called when mouse events occur
+    cv2.setMouseCallback("Blemish_removal", removeBlemish)
+    k = 0
+    # loop until escape character is pressed
+    while k != 27:
+        cv2.imshow("Blemish_removal", source)
 
-    k = cv2.waitKey(20) & 0xFF
+        k = cv2.waitKey(20) & 0xFF
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
